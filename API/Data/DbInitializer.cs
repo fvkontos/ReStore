@@ -12,7 +12,7 @@ namespace API.Data
                 var user = new User
                 {
                     UserName = "bob",
-                    Email = "bobtest.com"
+                    Email = "bob@test.com"
                 };
 
                 await userManager.CreateAsync(user, "Pa$$w0rd");
