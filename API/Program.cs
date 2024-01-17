@@ -2,7 +2,6 @@ using System.Text;
 using API.Data;
 using API.Entities;
 using API.Middleware;
-using API.RequestHelpers;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -15,12 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    // Include 'SecurityScheme' to use JWT Authentication
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -28,8 +25,7 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put Bearer + your token in the box below",
-
+        Description = "Put Bearer + your token in the box",
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -72,76 +68,6 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseNpgsql(connString);
 });
-
-
-builder.Services.AddCors();
-builder.Services.AddIdentityCore<User>(opt =>
-{
-    opt.User.RequireUniqueEmail = true;
-})
-    .AddRoles<Role>()
-    .AddEntityFrameworkStores<StoreContext>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt =>
-    {
-        opt.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:TokenKey"]))
-        };
-    });
-builder.Services.AddAuthorization();
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<PaymentService>();
-builder.Services.AddScoped<ImageService>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-app.UseMiddleware<ExceptionMiddleware>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
-    });
-}
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-app.UseCors(opt => 
-{
-    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
-});
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-app.MapFallbackToController("Index", "Fallback");
-
-var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<StoreContext>();
-var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-try
-{
-    context.Database.Migrate();
-    await DbInitializer.Initilize(context, userManager);
-}
-catch (Exception ex)
-{
-    logger.LogError(ex, "A problem occurred during migration");
-}
-
-app.Run();
-
 
 
 builder.Services.AddCors();
