@@ -6,9 +6,6 @@ on:
     branches:
       - 'main'
 
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
 jobs:
   docker:
     runs-on: ubuntu-latest
