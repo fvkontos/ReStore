@@ -3,6 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Box } from "@mui/material";
 import { removeBasketItemAsync, addBasketItemAsync } from "./basketSlice";
 import { useAppSelector, useAppDispatch } from "../../app/store/configureStore";
+import { BasketItem } from "../../app/models/basket";
 
 interface Props{
     items: BasketItem[];
