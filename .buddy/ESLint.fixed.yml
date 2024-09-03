@@ -4,3 +4,12 @@
     refs:
     - "refs/heads/main"
   fail_on_prepare_env_warning: true
+  actions:
+  - action: "eslint . --ext .js,.jsx,.ts,.tsx"
+    type: "BUILD"
+    docker_image_name: "library/node"
+    docker_image_tag: "20"
+    execute_commands:
+    - "# Enter a command or generate one using the 'Generate command' button below."
+    - "eslint . --ext .js,.jsx,.ts,.tsx"
+    shell: "BASH"
