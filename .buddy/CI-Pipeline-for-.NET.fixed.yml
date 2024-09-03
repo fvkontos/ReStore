@@ -4,3 +4,12 @@
     refs:
     - "refs/heads/main"
   fail_on_prepare_env_warning: true
+  actions:
+  - action: "msbuild /p:Configuration=Release /p:DebugSymbols=false /p:TargetFrameworkVersion=\"v4.7\""
+    type: "BUILD"
+    docker_image_name: "library/mono"
+    docker_image_tag: "6.12.0"
+    execute_commands:
+    - "nuget restore"
+    - "msbuild /p:Configuration=Release /p:DebugSymbols=false /p:TargetFrameworkVersion=\"v4.7\""
+    shell: "BASH"
